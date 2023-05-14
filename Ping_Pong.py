@@ -1,75 +1,90 @@
-from pygame import *
+import pygame
+import pygame.freetype
 
-class GameSprite(sprite.Sprite):
-    def __init__(self, player_image, player_x, player_y, player_speed, widht, height):
-        super().__init__()
-        self.image = transform.scale(image.load(player_image), (widht, height))
-        self.speed = player_speed
-        self.rect = self.image.get_rect()
-        self.rect.x = player_x
-        self.rect.y = player_y
-    def reset(self):
-        window.blit(self.image, (self.rect.x, self.rect.y)) 
+pygame.init()
+screen = pygame.display.set_mode((900,500))
+pygame.display.set_caption('Ping Pong')
+clock = pygame.time.Clock()
+game_status = "Game"
+font = pygame.freetype.Font(None, 30)
 
-class Player(GameSprite):
-    def update(self):
-        keys_pressed = key.get_pressed()
-        if keys_pressed[K_w] and self.rect.y > 0:
-            self.rect.y -= self.speed
-        if keys_pressed[K_s] and self.rect.y < win_height - 150:
-            self.rect.y += self.speed  
+player = pygame.rect.Rect(10, 200, 5, 100)
+player2 = pygame.rect.Rect(885, 200, 5, 100)
+ball = pygame.rect.Rect(425, 225, 25, 25)
 
-class Player2(GameSprite):
-    def update(self):
-        keys_pressed = key.get_pressed()
-        if keys_pressed[K_UP] and self.rect.y > 0:
-            self.rect.y -= self.speed
-        if keys_pressed[K_DOWN] and self.rect.y < win_height - 150:
-            self.rect.y += self.speed
+ball_speed_x = 5
+ball_speed_y = 5
+score = [0, 0]
 
-class Ball(GameSprite):
-    def balll(self):
-        if self.rect.y < 0:
-            self.rect.y +=  self.speed
-        if self.rect.y < win_height - 25:
-            self.rect.y -= self.speed
+def ball_respawn():
+    global game_status
+    ball.center = (450, 250)
 
-win_widht = 700
-win_height = 500
+def ball_check():
+    global ball_speed_y
+    global ball_speed_x
+    if ball.top <= 0:
+        ball_speed_y = -ball_speed_y
+    if ball.bottom >= 500:
+        ball_speed_y = - ball_speed_y
+    if ball.colliderect(player2) or ball.colliderect(player):
+        ball_speed_x = -ball_speed_x
+    if ball.right < 0:
+        score[1] += 1
+        ball_respawn()
+    if ball.left > 900:
+        score[0] += 1
+        ball_respawn()
 
-window = display.set_mode((win_widht, win_height))
-display.set_caption("Ping Pong")
-background = transform.scale(image.load('b.jpg'), (700, 500))
-
-player1 = Player('Palka.jpg', 25, 150, 4, 10, 150)
-player2 = Player2('Palka.jpg', 650, 150, 4, 10, 150)
-ball =  Ball('Ball.png', 350, 250, 5, 25, 25)
-
-
-finish = False
 game = True
-clock = time.Clock()
 FPS = 60
 
-while game :
-    for e in event.get():
-        if e.type == QUIT:
-            game = False  
+player_y= 0
+player2_y = 0
+
+while game:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                player_y -=  4
+            if event.key == pygame.K_s:
+                player_y +=  4
+        
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                player_y +=  4
+            if event.key == pygame.K_s:
+                player_y -=  4
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                player2_y -=  4
+            if event.key == pygame.K_DOWN:
+                player2_y +=  4
+        
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                player2_y +=  4
+            if event.key == pygame.K_DOWN:
+                player2_y -=  4
 
 
 
-    if not finish:
-        window.blit(background, (0, 0))
+    player.y += player_y
+    player2.y += player2_y
 
-        ball.balll()
-        ball.update()
-        ball.reset()
+    ball.x += ball_speed_x
+    ball.y += ball_speed_y
+    ball_check()
+    screen.fill((0, 0, 0))
 
-        player1.update()
-        player1.reset()
+    font.render_to(screen, (440, 20), str(score[0])+ ':' +str(score[1]), (255,255,255))
 
-        player2.update()
-        player2.reset()
+    pygame.draw.rect(screen, (20, 200, 20), player)
+    pygame.draw.rect(screen, (200, 20, 20), player2)
+    pygame.draw.ellipse(screen, (255, 255, 255), ball)
 
+    pygame.display.flip()
     clock.tick(FPS)
-    display.update()
