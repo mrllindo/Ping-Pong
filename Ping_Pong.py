@@ -5,7 +5,6 @@ pygame.init()
 screen = pygame.display.set_mode((900,500))
 pygame.display.set_caption('Ping Pong')
 clock = pygame.time.Clock()
-game_status = "Game"
 font = pygame.freetype.Font(None, 30)
 
 player = pygame.rect.Rect(10, 200, 5, 100)
@@ -17,7 +16,6 @@ ball_speed_y = 5
 score = [0, 0]
 
 def ball_respawn():
-    global game_status
     ball.center = (450, 250)
 
 def ball_check():
@@ -37,7 +35,7 @@ def ball_check():
         ball_respawn()
 
 game = True
-FPS = 90
+FPS = 60
 
 player_y= 0
 player2_y = 0
@@ -48,27 +46,27 @@ while game:
             game = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                player_y -=  4
+                player_y -=  6
             if event.key == pygame.K_s:
-                player_y +=  4
+                player_y +=  6
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
-                player_y +=  4
+                player_y +=  6
             if event.key == pygame.K_s:
-                player_y -=  4
+                player_y -=  6
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                player2_y -=  4
+                player2_y -=  6
             if event.key == pygame.K_DOWN:
-                player2_y +=  4
+                player2_y +=  6
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
-                player2_y +=  4
+                player2_y +=  6
             if event.key == pygame.K_DOWN:
-                player2_y -=  4
+                player2_y -=  6
 
 
 
@@ -80,10 +78,10 @@ while game:
     ball_check()
     screen.fill((0, 0, 0))
 
-    font.render_to(screen, (440, 20), str(score[0])+ ':' +str(score[1]), (255,255,255))
+    font.render_to(screen, (440, 20), str(score[0])+ ':' +str(score[1]), (255, 255, 255))
 
-    pygame.draw.rect(screen, (20, 200, 20), player)
-    pygame.draw.rect(screen, (200, 20, 20), player2)
+    pygame.draw.rect(screen, (255, 255, 255), player)
+    pygame.draw.rect(screen, (255, 255, 255), player2)
     pygame.draw.ellipse(screen, (255, 255, 255), ball)
 
     pygame.display.flip()
