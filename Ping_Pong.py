@@ -37,7 +37,7 @@ def ball_check():
         ball_respawn()
 
 game = True
-FPS = 60
+FPS = 90
 
 player_y= 0
 player2_y = 0
